@@ -121,50 +121,54 @@ const Home = () => {
 
               {/* Booking Widget */}
               <div className="bg-background border rounded-2xl shadow-railway/20 p-4 md:p-6 relative z-10">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
                   {/* From */}
                   <div className="lg:col-span-3">
-                    <Label className="text-xs text-muted-foreground">From</Label>
-                    <StationSelect
-                      label=""
-                      placeholder="Type name or code"
-                      valueCode={from}
-                      onChangeCode={setFrom}
-                    />
+                    <Label className="text-xs text-foreground font-medium mb-2 block">From</Label>
+                    <div className="h-12">
+                      <StationSelect
+                        label=""
+                        placeholder="Type name or code"
+                        valueCode={from}
+                        onChangeCode={setFrom}
+                      />
+                    </div>
                   </div>
 
                   {/* To */}
                   <div className="lg:col-span-3">
-                    <Label className="text-xs text-muted-foreground">To</Label>
-                    <StationSelect
-                      label=""
-                      placeholder="Type name or code"
-                      valueCode={to}
-                      onChangeCode={setTo}
-                    />
+                    <Label className="text-xs text-foreground font-medium mb-2 block">To</Label>
+                    <div className="h-12">
+                      <StationSelect
+                        label=""
+                        placeholder="Type name or code"
+                        valueCode={to}
+                        onChangeCode={setTo}
+                      />
+                    </div>
                   </div>
 
                   {/* Date of Journey */}
                   <div className="lg:col-span-6">
-                    <Label className="text-xs text-muted-foreground">Date of Journey</Label>
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1 flex items-center gap-2 border rounded-lg px-3 py-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <Label className="text-xs text-foreground font-medium mb-2 block">Date of Journey</Label>
+                    <div className="flex items-center gap-3 h-12">
+                      <div className="flex-1 flex items-center gap-2 border rounded-lg px-3 py-2 h-12">
+                        <Calendar className="h-4 w-4 text-foreground" />
                         <Input
                           type="date"
                           value={date}
                           onChange={(e) => setDate(e.target.value)}
                           onKeyDown={onKeyEnter}
-                          className="border-0 focus-visible:ring-0 px-0"
+                          className="border-0 focus-visible:ring-0 px-0 text-foreground h-8"
                         />
                       </div>
-                      <Button variant="outline" className="rounded-full" onClick={setTomorrow}>Tomorrow</Button>
+                      <Button variant="outline" className="rounded-full h-12 px-4" onClick={setTomorrow}>Tomorrow</Button>
                     </div>
                   </div>
 
                   {/* CTA */}
-                  <div className="lg:col-span-9">
-                    <Button onClick={handleSearch} className="w-full h-12 bg-[#d94b4b] hover:bg-[#c83f3f] text-white">
+                  <div className="lg:col-span-12 mt-4">
+                    <Button onClick={handleSearch} className="w-full h-12 bg-gradient-railway hover:opacity-90 text-white font-semibold shadow-lg">
                       <Search className="h-5 w-5 mr-2" />
                       Search Trains
                     </Button>

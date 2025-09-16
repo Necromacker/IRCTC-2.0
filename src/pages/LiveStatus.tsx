@@ -26,6 +26,29 @@ const MapComponent = () => {
           }
         ]
       });
+
+      // Add Mumbai → New Delhi route polyline in blue
+      const routePath = [
+        { lat: 19.0760, lng: 72.8777 }, // Mumbai
+        { lat: 22.3072, lng: 73.1812 }, // Vadodara (approx waypoint)
+        { lat: 25.2138, lng: 75.8648 }, // Kota (approx waypoint)
+        { lat: 27.4924, lng: 77.6737 }, // Mathura (approx waypoint)
+        { lat: 28.6139, lng: 77.2090 }, // New Delhi
+      ];
+
+      const polyline = new google.maps.Polyline({
+        path: routePath,
+        geodesic: true,
+        strokeColor: "#2563eb", // Tailwind blue-600
+        strokeOpacity: 0.95,
+        strokeWeight: 4,
+      });
+      polyline.setMap(map);
+
+      // Fit map to the route
+      const bounds = new google.maps.LatLngBounds();
+      routePath.forEach((p) => bounds.extend(p));
+      map.fitBounds(bounds);
     }
   }, []);
 

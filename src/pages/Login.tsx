@@ -39,7 +39,7 @@ const Login = () => {
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-center p-4"
+      className="min-h-screen flex items-center justify-center p-4 relative"
       style={{
         backgroundImage: `url('https://t4.ftcdn.net/jpg/06/21/68/41/360_F_621684156_GHCg1koda7y1FKwCZ1WsuwIxk27Sezuh.jpg')`,
         backgroundSize: 'cover',
@@ -47,17 +47,17 @@ const Login = () => {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      {/* Dark blue overlay */}
-      <div className="absolute inset-0 bg-blue-900/80"></div>
+      {/* Enhanced blur overlay with railway theme */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/60 via-primary/40 to-railway-orange/50 backdrop-blur-md"></div>
       
       <div className="relative z-10 w-full max-w-md">
         {/* Logo and App Name */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-sm rounded-xl border border-blue-300/30 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl border border-white/30 mb-4">
             <Train className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-2">RailJourney</h1>
-          <p className="text-white/80 text-lg">Your gateway to seamless train travel</p>
+          <h1 className="text-4xl font-bold text-white mb-2">Indian Railways</h1>
+          <p className="text-white/90 text-lg">Your gateway to seamless train travel</p>
         </div>
 
         {/* Login Form Card */}
@@ -82,7 +82,7 @@ const Login = () => {
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="pl-10 h-12 border-gray-300 focus:border-primary focus:ring-primary"
                   />
                 </div>
               </div>
@@ -95,7 +95,7 @@ const Login = () => {
                   </Label>
                   <Link 
                     to="/forgot-password" 
-                    className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    className="text-sm text-primary hover:text-primary/80 font-medium"
                   >
                     Forgot password?
                   </Link>
@@ -108,7 +108,7 @@ const Login = () => {
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="pl-10 h-12 border-gray-300 focus:border-primary focus:ring-primary"
                   />
                 </div>
               </div>
@@ -117,7 +117,7 @@ const Login = () => {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-12 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-semibold text-lg rounded-lg transition-all duration-300"
+                className="w-full h-12 bg-gradient-railway hover:opacity-90 text-white font-semibold text-lg rounded-lg transition-all duration-300 shadow-lg"
               >
                 {isLoading ? (
                   <div className="flex items-center space-x-2">
@@ -138,7 +138,7 @@ const Login = () => {
                   Don't have an account?{" "}
                   <Link 
                     to="/signup" 
-                    className="text-blue-600 hover:text-blue-700 font-semibold"
+                    className="text-primary hover:text-primary/80 font-semibold"
                   >
                     Sign up
                   </Link>
@@ -150,7 +150,7 @@ const Login = () => {
 
         {/* Footer */}
         <div className="text-center mt-8">
-          <p className="text-white/70 text-sm">Secure • Fast • Reliable</p>
+          <p className="text-white/80 text-sm">Secure • Fast • Reliable</p>
         </div>
       </div>
     </div>
