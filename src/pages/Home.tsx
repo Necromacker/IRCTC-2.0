@@ -102,7 +102,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      <div className="relative">
         <div className="container mx-auto px-4 py-16 lg:py-24">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -120,7 +120,7 @@ const Home = () => {
               </div>
 
               {/* Booking Widget */}
-              <div className="bg-background border rounded-2xl shadow-railway/20 p-4 md:p-6">
+              <div className="bg-background border rounded-2xl shadow-railway/20 p-4 md:p-6 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
                   {/* From */}
                   <div className="lg:col-span-3">

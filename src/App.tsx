@@ -12,6 +12,8 @@ import LiveStatus from "./pages/LiveStatus";
 import AtStation from "./pages/AtStation";
 import PantryCart from "./pages/PantryCart";
 import AskDisha from "./pages/AskDisha";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 import AskDishaFab from "./components/AskDishaFab";
 
@@ -33,6 +35,8 @@ const App = () => (
           <Route path="/at-station" element={<AtStation />} />
           <Route path="/pantry-cart" element={<PantryCart />} />
           <Route path="/ask-disha" element={<AskDisha />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <AskDishaFab />

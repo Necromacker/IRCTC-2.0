@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,7 @@ const AskDisha = () => {
   ]);
   const [inputText, setInputText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const quickQuestions = [
     { text: "Check PNR status", icon: Search },
@@ -64,6 +65,16 @@ const AskDisha = () => {
       return "I can help you with various railway services including:\n\n• Checking PNR status and train schedules\n• Booking tickets and seat selection\n• Station information and facilities\n• Food ordering in trains\n• Refund and cancellation policies\n\nPlease let me know what specific information you need, and I'll be happy to assist you!";
     }
   };
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (scrollContainer) {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      }
+    }
+  }, [messages, isTyping]);
 
   const handleSendMessage = () => {
     if (!inputText.trim()) return;
@@ -115,64 +126,66 @@ const AskDisha = () => {
             </CardTitle>
           </CardHeader>
 
-          <CardContent className="flex-1 flex flex-col p-0">
+          <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
             {/* Messages Area */}
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div className={`flex items-start space-x-2 max-w-[80%] ${
-                      message.sender === 'user' ? 'flex-row-reverse space-x-reverse' : 'flex-row'
-                    }`}>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        message.sender === 'user' 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-gradient-primary text-primary-foreground'
+            <div className="flex-1 min-h-0">
+              <ScrollArea ref={scrollAreaRef} className="h-full p-4">
+                <div className="space-y-4">
+                  {messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div className={`flex items-start space-x-2 max-w-[80%] ${
+                        message.sender === 'user' ? 'flex-row-reverse space-x-reverse' : 'flex-row'
                       }`}>
-                        {message.sender === 'user' ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
-                      </div>
-                      <div className={`rounded-lg p-3 ${
-                        message.sender === 'user'
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted'
-                      }`}>
-                        <p className="whitespace-pre-wrap text-sm">{message.text}</p>
-                        <p className={`text-xs mt-2 ${
-                          message.sender === 'user'
-                            ? 'text-primary-foreground/70'
-                            : 'text-muted-foreground'
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          message.sender === 'user' 
+                            ? 'bg-primary text-primary-foreground' 
+                            : 'bg-gradient-primary text-primary-foreground'
                         }`}>
-                          {message.timestamp.toLocaleTimeString([], { 
-                            hour: '2-digit', 
-                            minute: '2-digit' 
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                {isTyping && (
-                  <div className="flex justify-start">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
-                        <Bot className="h-4 w-4 text-primary-foreground" />
-                      </div>
-                      <div className="bg-muted rounded-lg p-3">
-                        <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                          <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                          <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                          {message.sender === 'user' ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
+                        </div>
+                        <div className={`rounded-lg p-3 ${
+                          message.sender === 'user'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted'
+                        }`}>
+                          <p className="whitespace-pre-wrap text-sm">{message.text}</p>
+                          <p className={`text-xs mt-2 ${
+                            message.sender === 'user'
+                              ? 'text-primary-foreground/70'
+                              : 'text-muted-foreground'
+                          }`}>
+                            {message.timestamp.toLocaleTimeString([], { 
+                              hour: '2-digit', 
+                              minute: '2-digit' 
+                            })}
+                          </p>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
+                  ))}
+
+                  {isTyping && (
+                    <div className="flex justify-start">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
+                          <Bot className="h-4 w-4 text-primary-foreground" />
+                        </div>
+                        <div className="bg-muted rounded-lg p-3">
+                          <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+            </div>
 
             {/* Quick Questions */}
             {messages.length === 1 && (

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShoppingCart, Plus, Minus, Clock, Check, Trash2 } from "lucide-react";
+import { ShoppingCart, Plus, Minus, Clock, Check, Trash2, Smartphone, Banknote } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface CartItem {
@@ -176,6 +176,28 @@ const PantryCart = () => {
     });
   };
 
+  const handlePayWithUPI = () => {
+    toast({
+      title: "UPI Payment Initiated",
+      description: "Please complete the payment on your UPI app. Amount: ₹" + getTotalPrice()
+    });
+  };
+
+  const handlePayWithCash = () => {
+    toast({
+      title: "Cash Payment Selected",
+      description: "Please pay ₹" + getTotalPrice() + " in cash when your order is delivered"
+    });
+  };
+
+  const handlePlaceAnotherOrder = () => {
+    setShowMenu(true);
+    setOrderPlaced(false);
+    setCart([]);
+    setTrainNumber("");
+    setSeatNumber("");
+  };
+
   const MenuItemCard = ({ item, category }: { item: any, category: string }) => {
     const cartItem = cart.find(cartItem => cartItem.id === item.id);
     const isVeg = !!item.veg;
@@ -303,18 +325,24 @@ const PantryCart = () => {
                         <div ref={panelRef} className="relative overflow-hidden mt-6" style={{ height: panelHeight ?? 'auto' }}>
                           {!isSliding && (
                             <div className="relative">
-                              {renderItemsGrid(displayedTab)}
+                              <div className="max-h-[600px] overflow-y-auto">
+                                {renderItemsGrid(displayedTab)}
+                              </div>
                             </div>
                           )}
 
                           {isSliding && (
                             <>
                               <div className={`absolute inset-0 ${slideDir === 'forward' ? 'animate-out slide-out-to-left duration-300' : 'animate-out slide-out-to-right duration-300'}`}>
-                                {renderItemsGrid(displayedTab)}
+                                <div className="max-h-[600px] overflow-y-auto">
+                                  {renderItemsGrid(displayedTab)}
+                                </div>
                               </div>
                               {nextTab && (
                                 <div className={`absolute inset-0 ${slideDir === 'forward' ? 'animate-in slide-in-from-right duration-300' : 'animate-in slide-in-from-left duration-300'}`}>
-                                  {renderItemsGrid(nextTab)}
+                                  <div className="max-h-[600px] overflow-y-auto">
+                                    {renderItemsGrid(nextTab)}
+                                  </div>
                                 </div>
                               )}
                             </>
@@ -423,15 +451,34 @@ const PantryCart = () => {
                             <span className="font-medium">Estimated Delivery: 30–45 minutes</span>
                           </div>
                         </div>
-                        <Button onClick={() => {
-                          setShowMenu(true);
-                          setOrderPlaced(false);
-                          setCart([]);
-                          setTrainNumber("");
-                          setSeatNumber("");
-                        }}>
-                          Place Another Order
-                        </Button>
+                        
+                        {/* Payment Options */}
+                        <div className="space-y-3 mb-6">
+                          <h3 className="text-lg font-semibold text-foreground mb-3">Choose Payment Method</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <Button 
+                              onClick={handlePayWithUPI}
+                              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white"
+                            >
+                              <Smartphone className="h-4 w-4 mr-2" />
+                              Pay with UPI
+                            </Button>
+                            <Button 
+                              onClick={handlePayWithCash}
+                              className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white"
+                            >
+                              <Banknote className="h-4 w-4 mr-2" />
+                              Pay with Cash
+                            </Button>
+                            <Button 
+                              onClick={handlePlaceAnotherOrder}
+                              variant="outline"
+                              className="w-full"
+                            >
+                              Place Another Order
+                            </Button>
+                          </div>
+                        </div>
                       </CardContent>
                     </Card>
                   </div>

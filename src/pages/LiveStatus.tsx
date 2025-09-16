@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,55 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Search, Train, Clock, MapPin, AlertTriangle, CheckCircle, Circle } from "lucide-react";
+import { Wrapper, Status } from "@googlemaps/react-wrapper";
+
+// Google Maps component
+const MapComponent = () => {
+  const mapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (mapRef.current) {
+      const map = new google.maps.Map(mapRef.current, {
+        center: { lat: 20.5937, lng: 78.9629 }, // Center of India
+        zoom: 6,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        styles: [
+          {
+            featureType: "poi",
+            elementType: "labels",
+            stylers: [{ visibility: "off" }]
+          }
+        ]
+      });
+    }
+  }, []);
+
+  return <div ref={mapRef} className="w-full h-96 rounded-lg" />;
+};
+
+const render = (status: Status) => {
+  if (status === Status.LOADING) {
+    return (
+      <div className="w-full h-96 rounded-lg bg-muted flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+          <p className="text-sm text-muted-foreground">Loading map...</p>
+        </div>
+      </div>
+    );
+  }
+  if (status === Status.FAILURE) {
+    return (
+      <div className="w-full h-96 rounded-lg bg-muted flex items-center justify-center">
+        <div className="text-center">
+          <MapPin className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground">Map unavailable</p>
+        </div>
+      </div>
+    );
+  }
+  return <MapComponent />;
+};
 
 const LiveStatus = () => {
   const [trainQuery, setTrainQuery] = useState("");
@@ -112,7 +161,7 @@ const LiveStatus = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
+      <div className="container mx-auto px-4 max-w-6xl">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
@@ -220,6 +269,19 @@ const LiveStatus = () => {
                         <p className="font-medium text-primary">{trainStatus.avgSpeed}</p>
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
+
+                {/* Google Map */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <MapPin className="h-5 w-5 text-primary" />
+                      <span>Route Map</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Wrapper apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} render={render} />
                   </CardContent>
                 </Card>
 

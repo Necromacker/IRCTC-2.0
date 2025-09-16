@@ -84,13 +84,17 @@ const Navigation = () => {
 
           {/* Auth Buttons */}
           <div className="hidden lg:flex items-center space-x-2">
-            <Button variant="ghost" size="sm">
-              <User className="h-4 w-4 mr-2" />
-              Login
-            </Button>
-            <Button size="sm" className="bg-railway-orange hover:bg-railway-orange/90">
-              Sign Up
-            </Button>
+            <Link to="/login">
+              <Button variant="ghost" size="sm">
+                <User className="h-4 w-4 mr-2" />
+                Login
+              </Button>
+            </Link>
+            <Link to="/signup">
+              <Button size="sm" className="bg-railway-orange hover:bg-railway-orange/90">
+                Sign Up
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -128,13 +132,17 @@ const Navigation = () => {
                   );
                 })}
                 <div className="pt-4 border-t space-y-2">
-                  <Button variant="ghost" className="w-full justify-start">
-                    <User className="h-4 w-4 mr-2" />
-                    Login
-                  </Button>
-                  <Button className="w-full bg-railway-orange hover:bg-railway-orange/90">
-                    Sign Up
-                  </Button>
+                  <Link to="/login" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start">
+                      <User className="h-4 w-4 mr-2" />
+                      Login
+                    </Button>
+                  </Link>
+                  <Link to="/signup" onClick={() => setIsOpen(false)}>
+                    <Button className="w-full bg-railway-orange hover:bg-railway-orange/90">
+                      Sign Up
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </SheetContent>
