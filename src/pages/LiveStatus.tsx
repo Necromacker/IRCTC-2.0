@@ -52,13 +52,13 @@ const MapComponent = () => {
     }
   }, []);
 
-  return <div ref={mapRef} className="w-full h-96 rounded-lg" />;
+  return <div ref={mapRef} className="w-full h-96 rounded-xl ring-1 ring-border shadow-sm" />;
 };
 
 const render = (status: Status) => {
   if (status === Status.LOADING) {
     return (
-      <div className="w-full h-96 rounded-lg bg-muted flex items-center justify-center">
+      <div className="w-full h-96 rounded-xl bg-muted flex items-center justify-center ring-1 ring-border">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
           <p className="text-sm text-muted-foreground">Loading map...</p>
@@ -68,7 +68,7 @@ const render = (status: Status) => {
   }
   if (status === Status.FAILURE) {
     return (
-      <div className="w-full h-96 rounded-lg bg-muted flex items-center justify-center">
+      <div className="w-full h-96 rounded-xl bg-muted flex items-center justify-center ring-1 ring-border">
         <div className="text-center">
           <MapPin className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
           <p className="text-sm text-muted-foreground">Map unavailable</p>
@@ -183,35 +183,49 @@ const LiveStatus = () => {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-zinc-100 via-zinc-200 to-zinc-100 py-12">
       <div className="container mx-auto px-4 max-w-6xl">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Clock className="h-5 w-5 text-primary" />
-              <span>Live Train Status</span>
+        <Card className="border-2 card-glow ring-1 ring-primary/20 hover:ring-primary/40">
+          <CardHeader className="bg-gradient-to-r from-primary/10 to-railway-orange/10 rounded-t-xl border-b">
+            <CardTitle>
+              <div className="flex items-center justify-center">
+                <div className="flex items-center gap-3">
+                  <span className="hidden sm:block h-px w-12 bg-gradient-to-r from-transparent via-primary to-transparent" />
+                  <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border-2 widget-glow ring-1 ring-inset ring-primary/20 bg-white/70 backdrop-blur">
+                    <Clock className="h-7 w-7 text-primary" />
+                    <span className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-zinc-900 via-zinc-700 to-primary bg-clip-text text-transparent">Live Train Status</span>
+                  </div>
+                  <span className="hidden sm:block h-px w-12 bg-gradient-to-r from-transparent via-primary to-transparent" />
+                </div>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="train">Train Number</Label>
-                <div className="flex space-x-2">
-                  <Input
-                    id="train"
-                    placeholder="e.g., 12301"
-                    value={trainQuery}
-                    onChange={(e) => setTrainQuery(e.target.value.replace(/\D/g, '').slice(0,5))}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                    className="flex-1"
-                  />
-                  <Input
-                    type="date"
-                    value={journeyDate}
-                    onChange={(e) => setJourneyDate(e.target.value)}
-                    className="w-[11.5rem]"
-                  />
-                  <Button onClick={handleSearch} disabled={isSearching}>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <div className="flex-1 flex items-center gap-3 border rounded-lg px-3 py-2 widget-glow">
+                    <Search className="h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="train"
+                      placeholder="e.g., 12301"
+                      value={trainQuery}
+                      onChange={(e) => setTrainQuery(e.target.value.replace(/\D/g, '').slice(0,5))}
+                      onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                      className="border-0 focus-visible:ring-0 px-0"
+                    />
+                  </div>
+                  <div className="flex items-center gap-3 border rounded-lg px-3 py-2 widget-glow">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="date"
+                      value={journeyDate}
+                      onChange={(e) => setJourneyDate(e.target.value)}
+                      className="border-0 focus-visible:ring-0 px-0 w-[10.5rem]"
+                    />
+                  </div>
+                  <Button onClick={handleSearch} disabled={isSearching} className="h-11 bg-gradient-railway hover:opacity-90 shadow-lg">
                     {isSearching ? "Searching..." : "Track"}
                   </Button>
                 </div>
@@ -296,7 +310,7 @@ const LiveStatus = () => {
                 </Card>
 
                 {/* Google Map */}
-                <Card>
+                <Card className="card-glow">
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
                       <MapPin className="h-5 w-5 text-primary" />

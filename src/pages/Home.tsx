@@ -100,7 +100,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+    <div className="min-h-screen bg-gradient-to-br from-zinc-100 via-zinc-200 to-zinc-100">
       {/* Hero Section */}
       <div className="relative">
         <div className="container mx-auto px-4 py-16 lg:py-24">
@@ -120,7 +120,7 @@ const Home = () => {
               </div>
 
               {/* Booking Widget */}
-              <div className="bg-background border rounded-2xl shadow-railway/20 p-4 md:p-6 relative z-10">
+              <div className="bg-background border rounded-2xl shadow-railway/20 p-4 md:p-6 relative z-10 widget-glow">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
                   {/* From */}
                   <div className="lg:col-span-3">
@@ -192,6 +192,9 @@ const Home = () => {
       {/* Quick Actions */}
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
+          <div className="relative flex items-center justify-center mb-6">
+            <span className="h-px w-24 bg-gradient-to-r from-transparent via-primary to-transparent" />
+          </div>
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">
             Everything You Need
           </h2>
@@ -205,9 +208,9 @@ const Home = () => {
             const Icon = action.icon;
             return (
               <Link key={index} to={action.href} className="group">
-                <Card className="p-6 h-full hover:shadow-card transition-all duration-300 group-hover:-translate-y-1">
+                <Card className="p-6 h-full transition-all duration-300 group-hover:-translate-y-1 border card-glow hover:shadow-xl">
                   <div className="flex items-start space-x-4">
-                    <div className={`p-3 rounded-lg ${action.color}`}>
+                    <div className={`p-3 rounded-xl ring-1 ring-inset ring-white/20 shadow-sm group-hover:scale-105 transition ${action.color}`}>
                       <Icon className="h-6 w-6" />
                     </div>
                     <div className="flex-1">
@@ -227,22 +230,22 @@ const Home = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <div className="space-y-4">
-              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto">
-                <Search className="h-8 w-8 text-primary-foreground" />
+              <div className="w-16 h-16 bg-primary/10 ring-1 ring-primary/20 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+                <Search className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-xl font-semibold">Easy Booking</h3>
               <p className="text-muted-foreground">Simple and intuitive ticket booking process</p>
             </div>
             <div className="space-y-4">
-              <div className="w-16 h-16 bg-railway-orange rounded-full flex items-center justify-center mx-auto">
-                <Clock className="h-8 w-8 text-railway-orange-foreground" />
+              <div className="w-16 h-16 bg-railway-orange/10 ring-1 ring-railway-orange/20 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+                <Clock className="h-8 w-8 text-railway-orange" />
               </div>
               <h3 className="text-xl font-semibold">Real-time Updates</h3>
               <p className="text-muted-foreground">Live train status and delay information</p>
             </div>
             <div className="space-y-4">
-              <div className="w-16 h-16 bg-success rounded-full flex items-center justify-center mx-auto">
-                <MapPin className="h-8 w-8 text-success-foreground" />
+              <div className="w-16 h-16 bg-success/10 ring-1 ring-success/20 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+                <MapPin className="h-8 w-8 text-success" />
               </div>
               <h3 className="text-xl font-semibold">Track Journey</h3>
               <p className="text-muted-foreground">Monitor your train's progress throughout the journey</p>

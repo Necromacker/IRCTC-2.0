@@ -16,6 +16,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 import AskDishaFab from "./components/AskDishaFab";
+import ViewStation from "./pages/ViewStation";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/at-station" element={<AtStation />} />
           <Route path="/pantry-cart" element={<PantryCart />} />
           <Route path="/ask-disha" element={<AskDisha />} />
+          <Route path="/view-station" element={<ViewStation />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="*" element={<NotFound />} />

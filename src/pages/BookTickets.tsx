@@ -285,10 +285,10 @@ const BookTickets = () => {
                   {train.classes.map((cls: any) => (
                     <button
                       key={cls.code}
-                      className={`w-full border rounded-md p-3 text-left hover:bg-muted transition ${
+                      className={`w-full border rounded-md p-3 text-left transition transform will-change-transform hover:-translate-y-0.5 hover:shadow-md hover:ring-1 hover:ring-primary/30 ${
                         (cls.availability || '').toLowerCase().includes('wl') || (cls.availability || '').toLowerCase().includes('not')
-                          ? 'border-railway-orange'
-                          : 'border-success'
+                                                     ? 'border-railway-orange hover:bg-railway-orange/15'
+                           : 'border-success hover:bg-success/15'
                       }`}
                       onClick={() => handleClassClick(train, cls.code)}
                     >
@@ -320,117 +320,126 @@ const BookTickets = () => {
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="p-4 bg-muted/30 rounded-lg border max-w-[330px] mx-auto">
-          <div className="flex items-center justify-between mb-3 text-[10px] text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <div className="border rounded px-2 py-1 bg-white">TOILET</div>
-              <span>COACH ENTRY/EXIT</span>
+        <div className="grid md:grid-cols-2 gap-6 items-start">
+          {/* Coach left */}
+          <div className="p-4 bg-muted/30 rounded-lg border border-slate-400 md:max-w-none max-w-[330px] md:mx-0 mx-auto">
+            <div className="flex items-center justify-between mb-3 text-[10px] text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <div className="border rounded px-2 py-1 bg-white">TOILET</div>
+                <span>COACH ENTRY/EXIT</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span>COACH ENTRY/EXIT</span>
+                <div className="border rounded px-2 py-1 bg-white">TOILET</div>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span>COACH ENTRY/EXIT</span>
-              <div className="border rounded px-2 py-1 bg-white">TOILET</div>
-            </div>
-          </div>
-          <div className="coach-layout flex flex-col gap-0 mx-auto max-w-[320px] border rounded-md p-2 overflow-hidden">
-            {Array.from({ length: 9 }, (_, bayIndex) => {
-              const base = bayIndex * 8;
-              const rightSide = [
-                { n: base + 7, t: 'SL' },
-                { n: base + 8, t: 'SU' },
-              ];
-              const isBooked = (seatId: string) => bookedSeats?.has(seatId) ?? false;
-              const renderSeat = (seat: { n: number; t: string }, options?: { rotate?: boolean }) => {
-                const seatId = `S${seat.n}`;
-                const selected = formData.selectedSeats.includes(seatId);
+            <div className="coach-layout flex flex-col gap-0 mx-auto max-w-[320px] border border-slate-500 rounded-md p-2 overflow-hidden">
+              {Array.from({ length: 9 }, (_, bayIndex) => {
+                const base = bayIndex * 8;
+                const rightSide = [
+                  { n: base + 7, t: 'SL' },
+                  { n: base + 8, t: 'SU' },
+                ];
+                const isBooked = (seatId: string) => bookedSeats?.has(seatId) ?? false;
+                const renderSeat = (seat: { n: number; t: string }, options?: { rotate?: boolean }) => {
+                  const seatId = `S${seat.n}`;
+                  const selected = formData.selectedSeats.includes(seatId);
+                  return (
+                    <Button
+                      key={seatId}
+                      variant="ghost"
+                      size="sm"
+                      className={`seat-btn h-12 w-12 p-0 bg-transparent border-0 shadow-none`}
+                      disabled={isBooked(seatId)}
+                      onClick={() => {
+                        if (selected) {
+                          setFormData({
+                            ...formData,
+                            selectedSeats: formData.selectedSeats.filter((s) => s !== seatId),
+                          });
+                        } else {
+                          setFormData({
+                            ...formData,
+                            selectedSeats: [...formData.selectedSeats, seatId],
+                          });
+                        }
+                      }}
+                    >
+                      <div className={`seat ${options?.rotate ? 'seat--rotated' : ''} ${selected ? 'seat--selected' : ''} ${isBooked(seatId) ? 'seat--booked' : ''}`}>
+                        <span className={`seat-number ${selected ? 'seat-number--on-dark' : ''}`}>{seat.n}</span>
+                      </div>
+                    </Button>
+                  );
+                };
                 return (
-                  <Button
-                    key={seatId}
-                    variant="ghost"
-                    size="sm"
-                    className={`seat-btn h-12 w-12 p-0 bg-transparent border-0 shadow-none`}
-                    disabled={isBooked(seatId)}
-                    onClick={() => {
-                      if (selected) {
-                        setFormData({
-                          ...formData,
-                          selectedSeats: formData.selectedSeats.filter((s) => s !== seatId),
-                        });
-                      } else {
-                        setFormData({
-                          ...formData,
-                          selectedSeats: [...formData.selectedSeats, seatId],
-                        });
-                      }
-                    }}
-                  >
-                    <div className={`seat ${options?.rotate ? 'seat--rotated' : ''} ${selected ? 'seat--selected' : ''} ${isBooked(seatId) ? 'seat--booked' : ''}`}>
-                      <span className={`seat-number ${selected ? 'seat-number--on-dark' : ''}`}>{seat.n}</span>
+                  <div key={bayIndex} className="grid grid-cols-[1fr_auto_auto] gap-3 items-stretch">
+                    <div className="grid grid-rows-2 gap-8">
+                      <div className="grid grid-cols-3 gap-0 items-center justify-center">
+                        {renderSeat({ n: base + 1, t: 'LB' }, { rotate: true })}
+                        {renderSeat({ n: base + 2, t: 'MB' }, { rotate: true })}
+                        {renderSeat({ n: base + 3, t: 'UB' }, { rotate: true })}
+                      </div>
+                      <div className="grid grid-cols-3 gap-0 items-center justify-center">
+                        {renderSeat({ n: base + 4, t: 'LB' })}
+                        {renderSeat({ n: base + 5, t: 'MB' })}
+                        {renderSeat({ n: base + 6, t: 'UB' })}
+                      </div>
                     </div>
-                  </Button>
+                    <div className="bg-border w-12 md:w-16 rounded-none my-0 self-stretch" aria-label="Corridor" />
+                    <div className="grid grid-rows-2 gap-8">
+                      {renderSeat(rightSide[0], { rotate: true })}
+                      {renderSeat(rightSide[1])}
+                    </div>
+                  </div>
                 );
-              };
-              return (
-                <div key={bayIndex} className="grid grid-cols-[1fr_auto_auto] gap-3 items-stretch">
-                  <div className="grid grid-rows-2 gap-8">
-                    <div className="grid grid-cols-3 gap-0 items-center justify-center">
-                      {renderSeat({ n: base + 1, t: 'LB' }, { rotate: true })}
-                      {renderSeat({ n: base + 2, t: 'MB' }, { rotate: true })}
-                      {renderSeat({ n: base + 3, t: 'UB' }, { rotate: true })}
-                    </div>
-                    <div className="grid grid-cols-3 gap-0 items-center justify-center">
-                      {renderSeat({ n: base + 4, t: 'LB' })}
-                      {renderSeat({ n: base + 5, t: 'MB' })}
-                      {renderSeat({ n: base + 6, t: 'UB' })}
-                    </div>
+              })}
+            </div>
+            <div className="flex items-center justify-between mt-3 text-[10px] text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <div className="border rounded px-2 py-1 bg-white">TOILET</div>
+                <span>COACH ENTRY/EXIT</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span>COACH ENTRY/EXIT</span>
+                <div className="border rounded px-2 py-1 bg-white">TOILET</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right panel: legend and actions */}
+          <div className="space-y-6">
+            <div className="space-y-4 p-4 border rounded-lg bg-background">
+              <div className="font-semibold">Details</div>
+              <div className="flex flex-col gap-3 text-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-primary rounded"></div>
+                    <span>Selected</span>
                   </div>
-                  <div className="bg-border w-12 md:w-16 rounded-none my-0 self-stretch" aria-label="Corridor" />
-                  <div className="grid grid-rows-2 gap-8">
-                    {renderSeat(rightSide[0], { rotate: true })}
-                    {renderSeat(rightSide[1])}
-                  </div>
+                  <span className="text-muted-foreground">{formData.selectedSeats.length > 0 ? formData.selectedSeats.join(', ') : '-'}</span>
                 </div>
-              );
-            })}
-          </div>
-          <div className="flex items-center justify-between mt-3 text-[10px] text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <div className="border rounded px-2 py-1 bg-white">TOILET</div>
-              <span>COACH ENTRY/EXIT</span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-slate-500 rounded"></div>
+                  <span>Available</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-slate-400 rounded"></div>
+                  <span>Booked</span>
+                </div>
+                <div className="pt-2 border-t">
+                  <p className="font-semibold">Selected: {formData.selectedSeats.length} seat(s)</p>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span>COACH ENTRY/EXIT</span>
-              <div className="border rounded px-2 py-1 bg-white">TOILET</div>
-            </div>
+            <Button 
+              onClick={() => setStep('passenger')} 
+              className="w-full"
+              disabled={formData.selectedSeats.length === 0}
+            >
+              Continue to Passenger Details
+            </Button>
           </div>
         </div>
-
-        <div className="flex justify-between items-center">
-          <div className="flex space-x-4 text-sm">
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-primary rounded"></div>
-              <span>Selected</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 border-2 border-muted rounded"></div>
-              <span>Available</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-destructive rounded"></div>
-              <span>Booked</span>
-            </div>
-          </div>
-          <p className="font-semibold">
-            Selected: {formData.selectedSeats.length} seat(s)
-          </p>
-        </div>
-
-        <Button 
-          onClick={() => setStep('passenger')} 
-          className="w-full"
-          disabled={formData.selectedSeats.length === 0}
-        >
-          Continue to Passenger Details
-        </Button>
       </CardContent>
     </Card>
   );
@@ -569,7 +578,7 @@ const BookTickets = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-zinc-100 via-zinc-200 to-zinc-100 py-8">
       <div className="container mx-auto px-4">
         {step === 'search' && renderSearchForm()}
         {step === 'trains' && renderTrainList()}

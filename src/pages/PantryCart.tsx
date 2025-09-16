@@ -252,13 +252,21 @@ const PantryCart = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-zinc-100 via-zinc-200 to-zinc-100 py-8">
       <div className="container mx-auto px-4 max-w-6xl">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <ShoppingCart className="h-5 w-5 text-primary" />
-              <span>Pantry Cart - Order Food</span>
+        <Card className="border card-glow">
+          <CardHeader className="bg-gradient-to-r from-primary/10 to-railway-orange/10 rounded-t-xl border-b">
+            <CardTitle>
+              <div className="flex items-center justify-center">
+                <div className="flex items-center gap-3">
+                  <span className="hidden sm:block h-px w-12 bg-gradient-to-r from-transparent via-primary to-transparent" />
+                  <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border-2 widget-glow ring-1 ring-inset ring-primary/20 bg-white/70 backdrop-blur">
+                    <ShoppingCart className="h-7 w-7 text-primary" />
+                    <span className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-zinc-900 via-zinc-700 to-primary bg-clip-text text-transparent">Pantry Cart</span>
+                  </div>
+                  <span className="hidden sm:block h-px w-12 bg-gradient-to-r from-transparent via-primary to-transparent" />
+                </div>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -298,9 +306,11 @@ const PantryCart = () => {
               </div>
             </div>
 
-            <Button onClick={handleProceedToMenu} className="w-full bg-gradient-primary">
-              View Menu & Order Food
-            </Button>
+            <div className="flex justify-center">
+              <Button onClick={handleProceedToMenu} className="h-11 px-6 bg-gradient-railway hover:opacity-90 shadow-lg rounded-full">
+                View Menu & Order Food
+              </Button>
+            </div>
 
             {showMenu && (
               <div className="pt-6 space-y-6">

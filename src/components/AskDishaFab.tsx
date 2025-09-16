@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import AskDisha from "@/pages/AskDisha";
 import { MessageCircle } from "lucide-react";
 
@@ -9,14 +9,18 @@ const AskDishaFab = () => {
 
   return (
     <>
-      <div className="fixed bottom-4 right-4 z-50">
-        <Button
-          onClick={() => setOpen(true)}
-          className="h-12 w-12 rounded-full shadow-lg bg-gradient-primary p-0"
-          aria-label="Open Ask Disha chatbot"
-        >
-          <MessageCircle className="h-6 w-6 text-primary-foreground" />
-        </Button>
+      <div className="fixed bottom-10 right-6 z-50">
+        <div className="relative">
+          <span className="absolute inset-0 rounded-full bg-gradient-railway opacity-40 blur-xl animate-ping"></span>
+          <span className="absolute inset-0 rounded-full ring-4 ring-primary/20 animate-pulse"></span>
+          <Button
+            onClick={() => setOpen(true)}
+            className="h-16 w-16 rounded-full shadow-xl bg-gradient-primary p-0 relative fab-breathe"
+            aria-label="Open Ask Disha chatbot"
+          >
+            <MessageCircle className="h-8 w-8 text-primary-foreground icon-breathe" />
+          </Button>
+        </div>
       </div>
 
       <Sheet open={open} onOpenChange={setOpen}>

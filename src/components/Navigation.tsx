@@ -18,18 +18,19 @@ const Navigation = () => {
     { href: "/live-status", label: "Live", icon: Clock },
     { href: "/at-station", label: "Station", icon: Building },
     { href: "/pantry-cart", label: "Pantry", icon: ShoppingCart },
+    { href: "/view-station", label: "View Station", icon: Building },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+    <nav className="sticky top-0 z-50 bg-gradient-to-r from-primary to-railway-orange text-white shadow-md">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
             <img src={railwaysLogo} alt="Indian Railways" className="h-8 w-8 rounded-full" />
-            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            <span className="text-xl font-bold">
               Indian Railways
             </span>
           </Link>
@@ -43,9 +44,9 @@ const Navigation = () => {
                 return (
                   <Link key={item.href} to={item.href}>
                     <Button
-                      variant={isActive(item.href) ? "default" : "ghost"}
+                      variant="ghost"
                       size="sm"
-                      className="h-8 flex items-center px-2"
+                      className={`h-8 flex items-center px-2 text-white hover:bg-white/10 ${isActive(item.href) ? 'bg-white/15' : ''}`}
                     >
                       <Icon className="h-4 w-4" />
                       <span className="hidden lg:inline">{item.label}</span>
@@ -57,7 +58,7 @@ const Navigation = () => {
             {/* Grouped menu to reduce overflow */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant={["/train-search", "/pnr-status", "/at-station"].some((p) => isActive(p as string)) ? "default" : "ghost"} size="sm" className="h-8 flex items-center px-2">
+                                 <Button variant="ghost" size="sm" className={`h-8 flex items-center px-2 text-white hover:bg-white/10 ${["/train-search", "/pnr-status", "/at-station"].some((p) => isActive(p as string)) ? 'bg-white/15' : ''}`}>
                   <Search className="h-4 w-4" />
                   <span className="hidden lg:inline">Enquiries</span>
                 </Button>
@@ -85,13 +86,13 @@ const Navigation = () => {
           {/* Auth Buttons */}
           <div className="hidden lg:flex items-center space-x-2">
             <Link to="/login">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
                 <User className="h-4 w-4 mr-2" />
                 Login
               </Button>
             </Link>
             <Link to="/signup">
-              <Button size="sm" className="bg-railway-orange hover:bg-railway-orange/90">
+              <Button size="sm" className="bg-white text-primary hover:bg-white/90">
                 Sign Up
               </Button>
             </Link>
@@ -100,7 +101,7 @@ const Navigation = () => {
           {/* Mobile Menu Button */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="lg:hidden">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
@@ -121,10 +122,10 @@ const Navigation = () => {
                       onClick={() => setIsOpen(false)}
                       className="block"
                     >
-                      <Button
-                        variant={isActive(item.href) ? "default" : "ghost"}
-                        className="w-full justify-start space-x-2"
-                      >
+                                          <Button
+                      variant={isActive(item.href) ? "secondary" : "ghost"}
+                      className="w-full justify-start space-x-2 text-white hover:bg-white/10"
+                    >
                         <Icon className="h-4 w-4" />
                         <span>{item.label}</span>
                       </Button>
