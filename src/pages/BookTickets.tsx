@@ -232,7 +232,7 @@ const BookTickets = () => {
   );
 
   const renderTrainList = () => (
-    <div className="max-w-4xl mx-auto space-y-4">
+    <div className="max-w-6xl mx-auto space-y-6 px-4">
       <div className="flex items-center justify-between">
         <Button variant="outline" onClick={() => setStep('search')}>
           ← Back to Search
@@ -246,58 +246,58 @@ const BookTickets = () => {
         <p className="text-sm text-destructive">{error}</p>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         {loadingTrains && (
-          <Card>
+          <Card className="shadow-card">
             <CardContent className="p-6">Loading trains...</CardContent>
           </Card>
         )}
         {!loadingTrains && trains.length === 0 && !error && (
-          <Card>
+          <Card className="shadow-card">
             <CardContent className="p-6">No trains found.</CardContent>
           </Card>
         )}
         {trains.map((train) => (
-          <Card key={train.id} className="hover:shadow-card transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div className="grid md:grid-cols-3 gap-4 items-start">
+          <Card key={train.id} className="shadow-card border-2 hover:shadow-railway hover:border-primary/50 transition-all duration-300 transform hover:-translate-y-1 bg-white/80 backdrop-blur-sm">
+            <CardContent className="p-8">
+              <div className="space-y-6">
+                <div className="grid md:grid-cols-3 gap-6 items-start">
                   <div>
-                    <h3 className="font-semibold">{train.name}</h3>
-                    <p className="text-sm text-muted-foreground">#{train.number}</p>
+                    <h3 className="font-bold text-lg text-zinc-900">{train.name}</h3>
+                    <p className="text-sm text-muted-foreground font-medium">#{train.number}</p>
                     {train.hasPantry && (
-                      <p className="text-xs mt-1">🍽️ Pantry Available</p>
+                      <p className="text-xs mt-2 px-2 py-1 bg-orange-50 text-orange-700 rounded-full inline-block">🍽️ Pantry Available</p>
                     )}
                   </div>
                   <div className="text-center">
                     <div className="flex items-center justify-center space-x-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span>{train.departure} - {train.arrival}</span>
+                      <Clock className="h-5 w-5 text-primary" />
+                      <span className="font-semibold text-lg">{train.departure} - {train.arrival}</span>
                     </div>
-                    <p className="text-sm text-muted-foreground">{train.duration}</p>
+                    <p className="text-sm text-muted-foreground font-medium">{train.duration}</p>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs text-muted-foreground">Select a class to continue</span>
+                    <span className="text-sm text-muted-foreground font-medium">Select a class to continue</span>
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-3">
+                <div className="grid md:grid-cols-3 gap-4">
                   {train.classes.map((cls: any) => (
                     <button
                       key={cls.code}
-                      className={`w-full border rounded-md p-3 text-left transition transform will-change-transform hover:-translate-y-0.5 hover:shadow-md hover:ring-1 hover:ring-primary/30 ${
+                      className={`w-full border-2 rounded-xl p-4 text-left transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:ring-2 hover:ring-primary/30 bg-white/70 backdrop-blur-sm ${
                         (cls.availability || '').toLowerCase().includes('wl') || (cls.availability || '').toLowerCase().includes('not')
-                                                     ? 'border-railway-orange hover:bg-railway-orange/15'
-                           : 'border-success hover:bg-success/15'
+                                                     ? 'border-railway-orange hover:bg-railway-orange/10 hover:border-railway-orange hover:ring-railway-orange/30'
+                           : 'border-success hover:bg-success/10 hover:border-success hover:ring-success/30'
                       }`}
                       onClick={() => handleClassClick(train, cls.code)}
                     >
                       <div className="flex items-center justify-between">
-                        <div className="font-semibold">{cls.code}</div>
-                        <div className="text-sm">₹{cls.fare}</div>
+                        <div className="font-bold text-lg">{cls.code}</div>
+                        <div className="text-lg font-semibold text-primary">₹{cls.fare}</div>
                       </div>
-                      <div className="text-sm mt-1">{cls.availability}</div>
-                      <div className="text-xs text-muted-foreground">Chance: {cls.prediction}</div>
+                      <div className="text-sm mt-2 font-medium">{cls.availability}</div>
+                      <div className="text-xs text-muted-foreground mt-1">Chance: {cls.prediction}</div>
                     </button>
                   ))}
                 </div>
