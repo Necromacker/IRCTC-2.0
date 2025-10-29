@@ -25,4 +25,3 @@ export default tseslint.config(
   },
 );
 
-zsdvdszv
