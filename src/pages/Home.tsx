@@ -1,258 +1,284 @@
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Search, Clock, MapPin, ShoppingCart, MessageCircle, Building, Calendar, Train } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Search, MapPin, Calendar as CalendarIcon, TrainFront, MoreHorizontal, Plane, Hotel, MessageSquare, Train } from "lucide-react";
 import heroTrain from "@/assets/hero-train.jpg";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import StationSelect from "@/components/StationSelect";
+import { format } from "date-fns";
+import stationsFile from "../../Backend/stations.json";
+
+interface Station {
+  stnName: string;
+  stnCode: string;
+  stnCity?: string;
+}
 
 const Home = () => {
   const navigate = useNavigate();
-  const [params] = useSearchParams();
   const { toast } = useToast();
 
-  const initialFrom = params.get("from") || "";
-  const initialTo = params.get("to") || "";
-  const today = useMemo(() => {
-    const d = new Date();
-    d.setHours(0,0,0,0);
-    return d;
+  const [from, setFrom] = useState("");
+  const [fromQuery, setFromQuery] = useState("");
+  const [to, setTo] = useState("");
+  const [toQuery, setToQuery] = useState("");
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [activeTab, setActiveTab] = useState("Train");
+
+  const [showFromSuggestions, setShowFromSuggestions] = useState(false);
+  const [showToSuggestions, setShowToSuggestions] = useState(false);
+
+  // Load stations
+  const allStations: Station[] = useMemo(() => {
+    const raw = (Array.isArray((stationsFile as any)?.stations) ? (stationsFile as any).stations : (stationsFile as any)) as any[];
+    return raw.map((s: any) => ({
+      stnName: s.stnName || s.name || s.station_name || "",
+      stnCode: s.stnCode || s.code || s.station_code || "",
+      stnCity: s.stnCity || s.city || s.district || "",
+    })).filter((s: Station) => s.stnCode && s.stnName);
   }, []);
-  const toInputDate = (d: Date) => {
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+
+  const getSuggestions = (query: string) => {
+    const q = query.toLowerCase().trim();
+    if (q.length < 2) return [];
+    return allStations.filter(s =>
+      s.stnName.toLowerCase().includes(q) ||
+      s.stnCode.toLowerCase().includes(q)
+    ).slice(0, 8);
   };
 
-  const [from, setFrom] = useState(initialFrom);
-  const [to, setTo] = useState(initialTo);
-  const [date, setDate] = useState<string>(toInputDate(today));
-
-  const setTomorrow = () => {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    setDate(toInputDate(d));
-  };
+  const fromSuggestions = useMemo(() => getSuggestions(fromQuery), [fromQuery]);
+  const toSuggestions = useMemo(() => getSuggestions(toQuery), [toQuery]);
 
   const handleSearch = () => {
     if (!from || !to || !date) {
       toast({
-        title: "Missing Information",
-        description: "Please enter From, To and Date of Journey",
+        title: "Information Required",
+        description: "Please select origin, destination and journey date",
         variant: "destructive",
       });
       return;
     }
-    navigate(`/book-tickets?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${encodeURIComponent(date)}`);
+    const dateStr = format(date, "yyyy-MM-dd");
+    navigate(`/book-tickets?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${dateStr}`);
   };
-
-  const onKeyEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') handleSearch();
-  };
-
-  const quickActions = [
-    {
-      icon: Search,
-      title: "Book Tickets",
-      description: "Find and book train tickets",
-      href: "/book-tickets",
-      color: "bg-primary text-primary-foreground"
-    },
-    {
-      icon: MapPin,
-      title: "PNR Status",
-      description: "Check your booking status",
-      href: "/pnr-status",
-      color: "bg-railway-orange text-railway-orange-foreground"
-    },
-    {
-      icon: Clock,
-      title: "Live Status",
-      description: "Track trains in real-time",
-      href: "/live-status",
-      color: "bg-success text-success-foreground"
-    },
-    {
-      icon: Building,
-      title: "At Station",
-      description: "Station arrivals & departures",
-      href: "/at-station",
-      color: "bg-muted text-muted-foreground"
-    },
-    {
-      icon: ShoppingCart,
-      title: "Pantry Cart",
-      description: "Order food in train",
-      href: "/pantry-cart",
-      color: "bg-accent text-accent-foreground"
-    },
-    {
-      icon: MessageCircle,
-      title: "Ask Disha 2.0",
-      description: "AI assistant for queries",
-      href: "/ask-disha",
-      color: "bg-secondary text-secondary-foreground"
-    },
-  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-100 via-zinc-200 to-zinc-100">
-      {/* Hero Section */}
-      <div className="relative">
-        <div className="container mx-auto px-4 py-16 lg:py-24">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
-                  <span className="bg-gradient-hero bg-clip-text text-transparent">
-                    Book Train Tickets
-                  </span>
-                  <br />
-                  <span className="text-foreground">Made Simple</span>
-                </h1>
-                <p className="text-xl text-muted-foreground max-w-lg">
-                  Fast, reliable, and secure train booking experience across India
-                </p>
-              </div>
+    <div className="h-[calc(100vh-64px)] w-full bg-white relative overflow-hidden font-sans">
+      <div className="relative z-10 h-full flex flex-col">
+        {/* Indian Railways Title Header - Compact size for visibility */}
+        <div className="text-center pt-2 md:pt-7 pb-7">
+          <h1 className="text-2xl md:text-5xl font-light py-1 px-4 inline-flex items-center justify-center gap-3 tracking-[-0.01em] text-gray-800"
+            style={{ fontFamily: "'Outfit', sans-serif" }}>
+            INDIAN RAILWAYS <Train className="h-10 w-10 text-blue-500/80" />
+          </h1>
+          <div className="flex items-center justify-center gap-3 md:gap-6 mt-1 text-[10px] md:text-[12px] text-gray-400 font-bold uppercase tracking-[0.2em]">
+            <span>Safety</span>
+            <div className="h-3 w-[1px] bg-gray-200"></div>
+            <span>Security</span>
+            <div className="h-3 w-[1px] bg-gray-200"></div>
+            <span>Punctuality</span>
+          </div>
+        </div>
 
-              {/* Booking Widget */}
-              <div className="bg-background border rounded-2xl shadow-railway/20 p-4 md:p-6 relative z-10 widget-glow">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
-                  {/* From */}
-                  <div className="lg:col-span-3">
-                    <Label className="text-xs text-foreground font-medium mb-2 block">From</Label>
-                    <div className="h-12">
-                      <StationSelect
-                        label=""
-                        placeholder="Type name or code"
-                        valueCode={from}
-                        onChangeCode={setFrom}
-                      />
-                    </div>
-                  </div>
+        {/* Hero Section */}
+        <div className="relative w-full flex-1 max-h-[350px] px-8 md:px-16">
+          {/* Main Hero Container */}
+          <div className="w-full h-full relative">
+            {/* Darker Rotated Background (Matches reference) */}
+            <div className="absolute inset-0 bg-blue-950/20 rounded-[40px] -rotate-2 scale-[1.02] pointer-events-none z-0"></div>
 
-                  {/* To */}
-                  <div className="lg:col-span-3">
-                    <Label className="text-xs text-foreground font-medium mb-2 block">To</Label>
-                    <div className="h-12">
-                      <StationSelect
-                        label=""
-                        placeholder="Type name or code"
-                        valueCode={to}
-                        onChangeCode={setTo}
-                      />
-                    </div>
-                  </div>
+            {/* Main Hero Image with Wave Clip */}
+            <div className="w-full h-full overflow-hidden rounded-[50px] shadow-2xl relative z-10"
+              style={{
+                clipPath: "path('M0 0 H100% V85% C75% 95%, 50% 75%, 25% 95% S0 85% V0 Z')",
+              }}>
+              <img
+                src={heroTrain}
+                alt="Scenic Train Journey"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            </div>
 
-                  {/* Date of Journey */}
-                  <div className="lg:col-span-6">
-                    <Label className="text-xs text-foreground font-medium mb-2 block">Date of Journey</Label>
-                    <div className="flex items-center gap-3 h-12">
-                      <div className="flex-1 flex items-center gap-2 border rounded-lg px-3 py-2 h-12">
-                        <Calendar className="h-4 w-4 text-foreground" />
-                        <Input
-                          type="date"
-                          value={date}
-                          onChange={(e) => setDate(e.target.value)}
-                          onKeyDown={onKeyEnter}
-                          className="border-0 focus-visible:ring-0 px-0 text-foreground h-8"
-                        />
-                      </div>
-                      <Button variant="outline" className="rounded-full h-12 px-4" onClick={setTomorrow}>Tomorrow</Button>
-                    </div>
-                  </div>
-
-                  {/* CTA */}
-                  <div className="lg:col-span-12 mt-4">
-                    <Button onClick={handleSearch} className="w-full h-12 bg-gradient-railway hover:opacity-90 text-white font-semibold shadow-lg">
-                      <Search className="h-5 w-5 mr-2" />
-                      Search Trains
-                    </Button>
-                  </div>
+            {/* Floating Search Widget - Moved Upwards to be inside image area */}
+            <div className="absolute left-1/2 -translate-x-1/2 bottom-[10%] w-full max-w-5xl px-4 z-30">
+              {/* Tabs */}
+              <div className="flex justify-center mb-[-24px] relative z-40">
+                <div className="bg-white rounded-[20px] shadow-2xl border border-gray-100 p-1 flex items-center overflow-hidden h-12">
+                  {[
+                    { name: "Train", icon: TrainFront },
+                    { name: "Flights", icon: Plane },
+                    { name: "Hotels", icon: Hotel },
+                    { name: "More..", icon: MoreHorizontal }
+                  ].map((tab, idx, arr) => (
+                    <button
+                      key={tab.name}
+                      onClick={() => setActiveTab(tab.name)}
+                      className={`flex items-center gap-2 px-6 py-2 transition-all font-bold text-[13px] ${activeTab === tab.name
+                        ? "text-[#3b82f6]"
+                        : "text-black-550 hover:bg-gray-50"
+                        } ${idx !== arr.length - 1 ? "border-r border-gray-100" : ""}`}
+                    >
+                      <tab.icon className="h-4 w-4" />
+                      {tab.name}
+                    </button>
+                  ))}
                 </div>
               </div>
-            </div>
 
-            <div className="relative">
-              <img 
-                src={heroTrain} 
-                alt="Indian Railway Train"
-                className="w-full h-auto rounded-2xl shadow-railway"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent rounded-2xl" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <div className="relative flex items-center justify-center mb-6">
-            <span className="h-px w-24 bg-gradient-to-r from-transparent via-primary to-transparent" />
-          </div>
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-            Everything You Need
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Complete railway services at your fingertips
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {quickActions.map((action, index) => {
-            const Icon = action.icon;
-            return (
-              <Link key={index} to={action.href} className="group">
-                <Card className="p-6 h-full transition-all duration-300 group-hover:-translate-y-1 border card-glow hover:shadow-xl">
-                  <div className="flex items-start space-x-4">
-                    <div className={`p-3 rounded-xl ring-1 ring-inset ring-white/20 shadow-sm group-hover:scale-105 transition ${action.color}`}>
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-lg mb-2">{action.title}</h3>
-                      <p className="text-muted-foreground">{action.description}</p>
-                    </div>
+              {/* Main Search Panel */}
+              <div className="bg-white rounded-[32px] shadow-[0_24px_48px_-8px_rgba(0,0,0,0.12)] p-4 md:p-8 flex flex-col md:flex-row items-center gap-4 border border-gray-50/50 backdrop-blur-sm">
+                {/* From Input */}
+                <div className="flex-1 w-full relative">
+                  <div className="flex items-center gap-2 text-gray-400 mb-1 pl-1">
+                    <MapPin className="h-3 w-3" />
+                    <span className="text-[9px] uppercase tracking-widest font-black">From</span>
                   </div>
-                </Card>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
+                  <Input
+                    value={fromQuery}
+                    onChange={(e) => {
+                      setFromQuery(e.target.value);
+                      setShowFromSuggestions(true);
+                    }}
+                    onFocus={() => {
+                      setShowFromSuggestions(true);
+                    }}
+                    className="border-none p-0 h-auto text-xl font-bold focus-visible:ring-0 placeholder:text-gray-300 text-gray-800"
+                    placeholder="NDLS - Delhi"
+                  />
+                  {showFromSuggestions && fromSuggestions.length > 0 && (
+                    <div className="absolute top-full left-0 w-full mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 z-[100] max-h-48 overflow-auto py-1">
+                      {fromSuggestions.map(s => (
+                        <div
+                          key={s.stnCode}
+                          className="px-3 py-2 hover:bg-blue-50 cursor-pointer transition-colors border-b last:border-0 border-gray-50"
+                          onClick={() => {
+                            setFrom(s.stnCode);
+                            setFromQuery(`${s.stnName} (${s.stnCode})`);
+                            setShowFromSuggestions(false);
+                          }}
+                        >
+                          <p className="font-bold text-gray-800 text-sm">{s.stnName}</p>
+                          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wide">{s.stnCode}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
-      {/* Features */}
-      <div className="bg-muted/30 py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8 text-center">
-            <div className="space-y-4">
-              <div className="w-16 h-16 bg-primary/10 ring-1 ring-primary/20 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
-                <Search className="h-8 w-8 text-primary" />
+                <div className="hidden md:block h-10 w-[1.5px] bg-gray-100 mx-1"></div>
+
+                {/* To Input */}
+                <div className="flex-1 w-full relative">
+                  <div className="flex items-center gap-2 text-gray-400 mb-1 pl-1">
+                    <MapPin className="h-3 w-3" />
+                    <span className="text-[9px] uppercase tracking-widest font-black">To</span>
+                  </div>
+                  <Input
+                    value={toQuery}
+                    onChange={(e) => {
+                      setToQuery(e.target.value);
+                      setShowToSuggestions(true);
+                    }}
+                    onFocus={() => {
+                      setShowToSuggestions(true);
+                    }}
+                    className="border-none p-0 h-auto text-xl font-bold focus-visible:ring-0 placeholder:text-gray-300 text-gray-800"
+                    placeholder="MMCT - Agra"
+                  />
+                  {showToSuggestions && toSuggestions.length > 0 && (
+                    <div className="absolute top-full left-0 w-full mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 z-[100] max-h-48 overflow-auto py-1">
+                      {toSuggestions.map(s => (
+                        <div
+                          key={s.stnCode}
+                          className="px-3 py-2 hover:bg-blue-50 cursor-pointer transition-colors border-b last:border-0 border-gray-50"
+                          onClick={() => {
+                            setTo(s.stnCode);
+                            setToQuery(`${s.stnName} (${s.stnCode})`);
+                            setShowToSuggestions(false);
+                          }}
+                        >
+                          <p className="font-bold text-gray-800 text-sm">{s.stnName}</p>
+                          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wide">{s.stnCode}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="hidden md:block h-10 w-[1.5px] bg-gray-100 mx-1"></div>
+
+                {/* Date Picker */}
+                <div className="flex-[1.1] w-full">
+                  <div className="flex items-center gap-2 text-gray-400 mb-1 pl-1">
+                    <CalendarIcon className="h-3 w-3" />
+                    <span className="text-[9px] uppercase tracking-widest font-black">Departure Date</span>
+                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <div className="flex items-center gap-4 cursor-pointer hover:opacity-70 transition-opacity">
+                        <span className="text-xl font-bold text-gray-800 whitespace-nowrap">
+                          {date ? format(date, "d MMM, EEE") : "Select Date"}
+                        </span>
+                        <div className="p-2 border border-blue-100 rounded-xl bg-blue-50/30 text-blue-500 hover:bg-blue-100 transition-colors">
+                          <CalendarIcon className="h-5 w-5" />
+                        </div>
+                      </div>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 rounded-2xl border-gray-100 shadow-2xl" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        initialFocus
+                        className="rounded-2xl"
+                        disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <Button
+                  onClick={handleSearch}
+                  className="bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-[20px] h-[64px] px-10 text-lg font-black shadow-xl shadow-blue-100 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                >
+                  Search Trains
+                </Button>
               </div>
-              <h3 className="text-xl font-semibold">Easy Booking</h3>
-              <p className="text-muted-foreground">Simple and intuitive ticket booking process</p>
-            </div>
-            <div className="space-y-4">
-              <div className="w-16 h-16 bg-railway-orange/10 ring-1 ring-railway-orange/20 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
-                <Clock className="h-8 w-8 text-railway-orange" />
-              </div>
-              <h3 className="text-xl font-semibold">Real-time Updates</h3>
-              <p className="text-muted-foreground">Live train status and delay information</p>
-            </div>
-            <div className="space-y-4">
-              <div className="w-16 h-16 bg-success/10 ring-1 ring-success/20 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
-                <MapPin className="h-8 w-8 text-success" />
-              </div>
-              <h3 className="text-xl font-semibold">Track Journey</h3>
-              <p className="text-muted-foreground">Monitor your train's progress throughout the journey</p>
             </div>
           </div>
         </div>
+
+        {/* AskDISHA Feature Section - Reduced margin for visibility */}
+        <div className="container mx-auto px-4 mt-16 mb-4 ">
+          <div className="bg-[#f8fafc] rounded-[32px] p-6 md:p-8 border border-blue-50/50 flex flex-col md:flex-row items-center justify-between gap-6 group transition-all duration-500 hover:shadow-xl hover:bg-white text-sm md:text-base">
+            <div className="max-w-2xl text-center md:text-left">
+              <h2 className="text-xl md:text-2xl font-black mb-2 text-gray-900 leading-tight flex items-center gap-2 justify-center md:justify-start underline decoration-orange-200 underline-offset-4 decoration-2">
+                AskDISHA <MessageSquare className="h-5 w-5 text-orange-400 fill-orange-50" />
+              </h2>
+              <p className="text-gray-500 text-[13px] md:text-[15px] font-semibold leading-relaxed">
+                Connect with our AI assistant for fast, simple, and hassle-free ticket bookings and queries.
+                Experience the next generation of Indian Railway services.
+              </p>
+            </div>
+            <Button
+              onClick={() => navigate("/ask-disha")}
+              className="bg-[#da8e24] hover:bg-[#c67d1d] text-white rounded-[16px] h-12 px-10 text-base font-black shadow-lg shadow-orange-100 hover:scale-[1.05] active:scale-[0.95] transition-all min-w-[180px]"
+            >
+              Start Chatting
+            </Button>
+          </div>
+        </div>
       </div>
+
+      {/* Close suggestions on click outside */}
+      <div
+        className={`fixed inset-0 z-0 ${showFromSuggestions || showToSuggestions ? 'block' : 'hidden'}`}
+        onClick={() => { setShowFromSuggestions(false); setShowToSuggestions(false); }}
+      />
     </div>
   );
 };
