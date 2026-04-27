@@ -93,6 +93,56 @@ const BookTickets = () => {
     }
   }, []);
 
+  // Listen for AI voice booking data
+  useEffect(() => {
+    const handleAIBooking = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (!detail) return;
+
+      const newFormData = { ...formData };
+
+      // Fill station codes
+      if (detail.fromCode) {
+        newFormData.from = detail.fromCode;
+      }
+      if (detail.toCode) {
+        newFormData.to = detail.toCode;
+      }
+
+      // Fill date
+      if (detail.date) {
+        newFormData.date = detail.date;
+      }
+
+      // Fill passenger details
+      if (detail.passengers && detail.passengers.length > 0) {
+        newFormData.passengers = detail.passengers.map((p: any) => ({
+          name: p.name || '',
+          age: p.age ? String(p.age) : '',
+          gender: p.gender || '',
+        }));
+      }
+
+      setFormData(newFormData);
+
+      // Auto-search if we have from, to, and date
+      if (newFormData.from && newFormData.to && newFormData.date) {
+        const fromCode = newFormData.from.trim().toUpperCase();
+        const toCode = newFormData.to.trim().toUpperCase();
+        setStep('trains');
+        fetchTrains(fromCode, toCode, newFormData.date);
+
+        toast({
+          title: "🎤 Voice Booking Active",
+          description: `Searching trains from ${detail.fromStation || fromCode} to ${detail.toStation || toCode}`,
+        });
+      }
+    };
+
+    window.addEventListener('ai-booking-data', handleAIBooking);
+    return () => window.removeEventListener('ai-booking-data', handleAIBooking);
+  }, [formData]);
+
   const isStationCode = (s: string) => /^[A-Z]{2,4}$/.test(s.trim().toUpperCase());
 
   const fetchTrains = async (fromCode: string, toCode: string, dateISO: string) => {

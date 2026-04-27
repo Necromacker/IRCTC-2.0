@@ -1,7 +1,4 @@
-// Main JavaScript for Easy-Rail App
-
-// DOM Content Loaded Event
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initializeApp();
 });
 
@@ -18,17 +15,17 @@ function initializeApp() {
 function setupMobileMenu() {
     const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
     const navbar = document.getElementById('navbar');
-    
+
     if (mobileMenuToggle && navbar) {
-        mobileMenuToggle.addEventListener('click', function() {
+        mobileMenuToggle.addEventListener('click', function () {
             mobileMenuToggle.classList.toggle('active');
             navbar.classList.toggle('active');
         });
-        
+
         // Close mobile menu when clicking on a link
         const navLinks = navbar.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
-            link.addEventListener('click', function() {
+            link.addEventListener('click', function () {
                 mobileMenuToggle.classList.remove('active');
                 navbar.classList.remove('active');
             });
@@ -40,7 +37,7 @@ function setupMobileMenu() {
 function setupActiveNavigation() {
     const currentPage = window.location.pathname.split('/').pop();
     const navLinks = document.querySelectorAll('.nav-link');
-    
+
     navLinks.forEach(link => {
         const linkHref = link.getAttribute('href');
         if (currentPage === linkHref || (currentPage === '' && linkHref === 'index.html')) {
@@ -55,7 +52,7 @@ function setupActiveNavigation() {
 function setupDateInputs() {
     const dateInputs = document.querySelectorAll('input[type="date"]');
     const today = new Date().toISOString().split('T')[0];
-    
+
     dateInputs.forEach(input => {
         if (!input.value) {
             input.value = today;
@@ -67,11 +64,11 @@ function setupDateInputs() {
 function setupStationSearch() {
     const fromInput = document.getElementById('from-station');
     const toInput = document.getElementById('to-station');
-    
+
     if (fromInput) {
         setupStationInput(fromInput, 'suggestions-from');
     }
-    
+
     if (toInput) {
         setupStationInput(toInput, 'suggestions-to');
     }
@@ -81,23 +78,23 @@ function setupStationSearch() {
 function setupStationInput(input, suggestionsId) {
     let debounceTimer;
     const suggestionsContainer = document.getElementById(suggestionsId);
-    
-    input.addEventListener('input', function() {
+
+    input.addEventListener('input', function () {
         clearTimeout(debounceTimer);
         const query = this.value.trim();
-        
+
         if (query.length < 2) {
             hideSuggestions(suggestionsContainer);
             return;
         }
-        
+
         debounceTimer = setTimeout(() => {
             searchStations(query, suggestionsContainer, input);
         }, 300);
     });
-    
+
     // Hide suggestions when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!input.contains(e.target) && !suggestionsContainer.contains(e.target)) {
             hideSuggestions(suggestionsContainer);
         }
@@ -109,13 +106,13 @@ async function searchStations(query, container, input) {
     try {
         const response = await fetch('../assets/stations.json');
         const data = await response.json();
-        
-        const stations = data.stations.filter(station => 
+
+        const stations = data.stations.filter(station =>
             station.stnName.toLowerCase().includes(query.toLowerCase()) ||
             station.stnCode.toLowerCase().includes(query.toLowerCase()) ||
             station.stnCity.toLowerCase().includes(query.toLowerCase())
         ).slice(0, 10);
-        
+
         displaySuggestions(stations, container, input);
     } catch (error) {
         console.error('Error fetching stations:', error);
@@ -129,10 +126,10 @@ function displaySuggestions(stations, container, input) {
         hideSuggestions(container);
         return;
     }
-    
+
     container.innerHTML = '';
     container.style.display = 'block';
-    
+
     stations.forEach(station => {
         const suggestion = document.createElement('div');
         suggestion.className = 'suggestion-item';
@@ -146,21 +143,21 @@ function displaySuggestions(stations, container, input) {
             <div style="font-weight: 500; color: var(--text-primary);">${station.stnName}</div>
             <div style="font-size: 0.875rem; color: var(--text-secondary);">${station.stnCode} - ${station.stnCity}</div>
         `;
-        
-        suggestion.addEventListener('click', function() {
+
+        suggestion.addEventListener('click', function () {
             input.value = `${station.stnName} (${station.stnCode})`;
             sessionStorage.setItem(input.id === 'from-station' ? 'from' : 'to', station.stnCode);
             hideSuggestions(container);
         });
-        
-        suggestion.addEventListener('mouseenter', function() {
+
+        suggestion.addEventListener('mouseenter', function () {
             this.style.backgroundColor = 'var(--bg-tertiary)';
         });
-        
-        suggestion.addEventListener('mouseleave', function() {
+
+        suggestion.addEventListener('mouseleave', function () {
             this.style.backgroundColor = 'transparent';
         });
-        
+
         container.appendChild(suggestion);
     });
 }
@@ -177,7 +174,7 @@ function hideSuggestions(container) {
 function setupQuickSearch() {
     const form = document.getElementById('quick-search-form');
     if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function (e) {
             e.preventDefault();
             performQuickSearch();
         });
@@ -189,26 +186,26 @@ function performQuickSearch() {
     const fromStation = document.getElementById('from-station').value;
     const toStation = document.getElementById('to-station').value;
     const journeyDate = document.getElementById('journey-date').value;
-    
+
     if (!fromStation || !toStation) {
         showNotification('Please select both departure and destination stations.', 'warning');
         return;
     }
-    
+
     // Extract station codes from the input values
     const fromCode = extractStationCode(fromStation);
     const toCode = extractStationCode(toStation);
-    
+
     if (!fromCode || !toCode) {
         showNotification('Please select valid stations from the suggestions.', 'warning');
         return;
     }
-    
+
     // Store in session storage for the search page
     sessionStorage.setItem('from', fromCode);
     sessionStorage.setItem('to', toCode);
     sessionStorage.setItem('journeyDate', journeyDate);
-    
+
     // Redirect to search results or show results inline
     showSearchResults(fromCode, toCode, journeyDate);
 }
@@ -230,18 +227,18 @@ async function showSearchResults(fromCode, toCode, journeyDate) {
         resultsDiv.className = 'results-container';
         container.appendChild(resultsDiv);
     }
-    
+
     const resultsDiv = document.getElementById('search-results');
     resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-    
+
     try {
         const apiUrl = `https://erail.in/rail/getTrains.aspx?Station_From=${fromCode}&Station_To=${toCode}&DataSource=0&Language=0&Cache=true`;
-        
+
         const response = await fetch(apiUrl);
         const data = await response.text();
-        
+
         const result = parseTrainData(data);
-        
+
         if (result.success && result.data.length > 0) {
             displayTrainResults(result.data, resultsDiv, fromCode, toCode);
         } else {
@@ -268,14 +265,14 @@ function parseTrainData(data) {
     try {
         const arr = [];
         const rawData = data.split("~~~~~~~~").filter((el) => el.trim() !== "");
-        
+
         if (rawData[0].includes("No direct trains found")) {
             return {
                 success: false,
                 data: "No direct trains found between the selected stations."
             };
         }
-        
+
         if (rawData[0].includes("Please try again after some time.") ||
             rawData[0].includes("From station not found") ||
             rawData[0].includes("To station not found")) {
@@ -284,16 +281,16 @@ function parseTrainData(data) {
                 data: rawData[0].replace(/~/g, "")
             };
         }
-        
+
         for (let i = 0; i < rawData.length; i++) {
             const trainData = rawData[i].split("~^");
             const nextData = rawData[i + 1] || "";
             const trainData2 = nextData.split("~^");
-            
+
             if (trainData.length === 2) {
                 const details = trainData[1].split("~").filter((el) => el.trim() !== "");
                 const details2 = trainData2[0] ? trainData2[0].split("~").filter((el) => el.trim() !== "") : [];
-                
+
                 if (details.length >= 14) {
                     arr.push({
                         train_no: details[0],
@@ -316,7 +313,7 @@ function parseTrainData(data) {
                 }
             }
         }
-        
+
         // Sort by departure time
         arr.sort((a, b) => {
             const timeA = a.from_time.split(":").map(Number);
@@ -325,7 +322,7 @@ function parseTrainData(data) {
             const minutesB = timeB[0] * 60 + timeB[1];
             return minutesA - minutesB;
         });
-        
+
         return {
             success: true,
             data: arr
@@ -343,14 +340,14 @@ function parseTrainData(data) {
 function displayTrainResults(trains, container, fromCode, toCode) {
     const selectedDate = document.getElementById('journey-date').value;
     const selectedDayIndex = getDayIndex(selectedDate);
-    
+
     container.innerHTML = `
         <h2 class="results-title">Trains from ${fromCode} to ${toCode}</h2>
         <div class="trains-grid">
             ${trains.filter(train => train.running_days[selectedDayIndex] === "1").map(train => createTrainCard(train)).join('')}
         </div>
     `;
-    
+
     // Add CSS for trains grid
     if (!document.getElementById('trains-grid-style')) {
         const style = document.createElement('style');
@@ -374,7 +371,7 @@ function createTrainCard(train) {
         .split("")
         .map((bit, index) => bit === "1" ? weekdays[index] : `<span style="color: var(--text-muted);">${weekdays[index]}</span>`)
         .join(" ");
-    
+
     return `
         <div class="card" style="cursor: pointer;" onclick="window.location.href='train-search.html?trainno=${train.train_no}'">
             <div class="card-header">
@@ -432,7 +429,7 @@ function showNotification(message, type = 'info') {
         animation: slideIn 0.3s ease;
     `;
     notification.textContent = message;
-    
+
     // Add animation styles
     if (!document.getElementById('notification-styles')) {
         const style = document.createElement('style');
@@ -449,9 +446,9 @@ function showNotification(message, type = 'info') {
         `;
         document.head.appendChild(style);
     }
-    
+
     document.body.appendChild(notification);
-    
+
     // Auto remove after 5 seconds
     setTimeout(() => {
         notification.style.animation = 'slideOut 0.3s ease';

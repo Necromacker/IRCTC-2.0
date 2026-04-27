@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Search, MapPin, Calendar as CalendarIcon, TrainFront, MoreHorizontal, Plane, Hotel, MessageSquare, Train } from "lucide-react";
+import { Search, MapPin, Calendar as CalendarIcon, TrainFront, MoreHorizontal, Plane, Hotel, MessageSquare, Train, Mic } from "lucide-react";
 import heroTrain from "@/assets/hero-train.jpg";
 import { useMemo, useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -265,10 +265,10 @@ const Home = () => {
               </p>
             </div>
             <Button
-              onClick={() => navigate("/ask-disha")}
-              className="bg-[#da8e24] hover:bg-[#c67d1d] text-white rounded-[16px] h-12 px-10 text-base font-black shadow-lg shadow-orange-100 hover:scale-[1.05] active:scale-[0.95] transition-all min-w-[180px]"
+              onClick={() => window.dispatchEvent(new CustomEvent("toggle-voice-assistant"))}
+              className="bg-[#da8e24] hover:bg-[#c67d1d] text-white rounded-[16px] h-12 px-10 text-base font-black shadow-lg shadow-orange-100 hover:scale-[1.05] active:scale-[0.95] transition-all min-w-[180px] flex items-center gap-2"
             >
-              Start Chatting
+              <Mic className="h-5 w-5" /> Voice Booking
             </Button>
           </div>
         </div>
